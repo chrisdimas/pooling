@@ -111,6 +111,7 @@ class PLG_Public
         wp_register_script($this->pooling . '_report', plugin_dir_url(__FILE__) . 'js/report.js', array('jquery'), $this->version, false);
         wp_register_script($this->pooling . '_accept', plugin_dir_url(__FILE__) . 'js/accept.js', array('jquery'), $this->version, false);
         wp_register_script($this->pooling . '_map_script', plugin_dir_url(__FILE__) . 'js/map.js', array('jquery'), $this->version, false);
+        wp_register_script($this->pooling . '_registration', plugin_dir_url(__FILE__) . 'js/registration.js', array('jquery'), $this->version, false);
     }
 
     public function replace_script_att($tag, $handle)
@@ -268,6 +269,7 @@ class PLG_Public
     public function registration_form($user = null)
     {
         wp_enqueue_script($this->pooling . '_gmapautocomplete');
+        wp_enqueue_script($this->pooling . '_registration');
         ob_start();
         // only show the registration form to non-logged-in members
         if (!is_user_logged_in()) {
@@ -279,7 +281,7 @@ class PLG_Public
                 include_once 'partials/registration.php';
                 return ob_get_clean();
             } else {
-                $output = __('User registration is not enabled');
+                $output = __('User registration is not enabled','pooling');
             }
             return $output;
         }

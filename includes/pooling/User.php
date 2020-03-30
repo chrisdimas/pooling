@@ -189,6 +189,7 @@ class User
         update_user_meta($user_id, 'verification_code', $code);
         update_user_meta($user_id, 'verification_code_last', time());
         $mobile = get_user_meta($user_id, 'mobile', true);
+        // $to     = StaticOptions::get_phone_prefixes()[get_user_meta($user_id, 'country', true)] . $mobile;
         $to     = StaticOptions::get_phone_prefixes()[get_user_meta($user_id, 'country', true)] . $mobile;
         $sms_id = $sms->message($to, sprintf('%s %d', __('Verifcation code', 'pooling'), $code));
         update_user_meta($user_id, 'sms_id', $sms_id);
