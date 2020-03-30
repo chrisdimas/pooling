@@ -1,0 +1,60 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+
+/*.button {
+	border-color: #6f76d9;
+	background-color: #6f76d9;
+	padding: 0.5rem 1.25rem;
+	color: #fff;
+	font-size: 18px;
+	line-height: 1.5;
+	border-radius: 4px;
+	display: inline-block;
+	font-weight: 400;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+	-webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+	-o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
+	letter-spacing: 0.75px;
+	-webkit-transition: all .4s ease;
+	-o-transition: all .4s ease;
+	transition: all .4s ease;
+}*/
+.errors {
+	background-color: #db0000;
+	color: white;
+	padding: 2% 6%;
+}
+.login-form {
+	margin-top:6%;
+}
+#map {
+height: 400px;
+width: 100%;
+}
+#map-users{
+	margin-top: 1rem;
+}
+.is-verified-badge {
+	color: #70b729;
+}
+.is-not-verified-badge {
+	color: #b72929;
+}
+.offer-to-user {
+	color: #29b7b7;
+}
+.offer-from-user {
+	color: #29b7b7;
+}

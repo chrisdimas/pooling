@@ -1,0 +1,6 @@
+# ---> WordPress
+*.log
+*.phpintel/
+.htaccess
+composer.lock
+composer.phar

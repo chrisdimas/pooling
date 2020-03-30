@@ -1,0 +1,107 @@
+<style type="text/css">
+	body{
+		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		font-size: 14px;
+		width: 100% !important;
+		min-height: 100%;
+		line-height: 1.6;
+		background: #f6f6f6;
+	}
+	table {
+		width: 45%;
+		max-width: 100%;
+		margin-bottom: 2rem;
+		background-color: #ffffff;
+		border-radius: 3px;
+	}
+	table {
+		font-size: 14px;
+	}
+	table th {
+		color: #000000;
+		border-bottom: 1px solid #ffffff;
+		/*background-color: #292929;*/
+		background-color: #fff;
+	}
+	table tbody td {
+		border-bottom: 1px solid #e8e8e8;
+	}
+	table tr.subheader th {
+		color: #ffffff;
+		border-bottom: 1px solid #ffffff;
+		background-color: #292929;
+	}
+	table thead tr.header th {
+		padding: 20px 25px;
+		font-size: 23px;
+	}
+	table tr {
+		border: 1px solid black;
+	}
+	table td {
+		margin-bottom: 9px;
+		padding: 15px 10px;
+		line-height: 1.3;
+		vertical-align: middle;
+	}
+	table th, table td {
+		padding-left: 20px;
+	}
+	.success {
+		background-color: #80e67e;
+	}
+	.error {
+		background-color: #e67e80;
+	}
+	.warning {
+		background-color: #e6b07e;
+	}
+	.info {
+		background-color: #7e82e6;
+		color: #ffffff;
+	}
+	.logo img {
+		width: 96px;
+	}
+	.center {
+	  display: block;
+	  margin-left: auto;
+	  margin-right: auto;
+	  width: 60%;
+	}
+	.center-text {
+		text-align: center;
+		vertical-align: center;
+	}
+</style>
+<div class="logo center">
+	<img class="logo" src="{{ logo }}">
+</div>
+<table>
+	<thead>
+		<tr class="header">
+			<th colspan="2">{{ header }}</th>
+		</tr>
+	</thead>
+	<tbody>
+			<tr>
+				<td>{{ message }}</td>
+			</tr>
+			<tr>
+				<td>{{ username }}</td>
+			</tr>
+			<tr>
+				<td>{{ needs }}</td>
+			</tr>
+	</tbody>
+	<tfoot>
+		{% for rule in rules %}
+		<tr>
+			<td class="center-text">{{ rule }}</td>
+		</tr>
+		{% endfor %}
+		<tr>
+			<td class="center-text">covid19help.eu © 2020 - Copyrights reserved - Developed by <a href="https://indie.systems">Indie Systems</a></td>
+		</tr>
+	</tfoot>
+</table>

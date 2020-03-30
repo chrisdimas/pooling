@@ -1,0 +1,14 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+.is-verified-badge {
+	color: #70b729;
+}
+.form-table th, .form-table td {
+	padding-left: 20px;
+}
+.tools-table tr {
+	border: 1px solid #c8c8c8;
+}
