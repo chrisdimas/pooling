@@ -99,9 +99,9 @@ class PLG_Public
          * between the defined hooks and the functions defined in this
          * class.
          */
-        $gapikey = get_option('pooling_gmaps_api',null);
-        $url = "https://maps.googleapis.com/maps/api/js?key={$gapikey}&language=el&&libraries=places,geometry";
-        wp_enqueue_script($this->pooling . '_gmapautocomplete', plugin_dir_url(__FILE__) . 'js/gmap-autocomplete.js', array('jquery',), $this->version, false);
+        $gapikey = get_option('pooling_gmaps_api', null);
+        $url     = "https://maps.googleapis.com/maps/api/js?key={$gapikey}&language=el&&libraries=places,geometry";
+        wp_enqueue_script($this->pooling . '_gmapautocomplete', plugin_dir_url(__FILE__) . 'js/gmap-autocomplete.js', array('jquery'), $this->version, false);
         wp_enqueue_script($this->pooling . '_gmaps', $url, array('jquery'), $this->version, false);
         wp_enqueue_script($this->pooling, plugin_dir_url(__FILE__) . 'js/pooling-public.js', array('jquery'), $this->version, false);
         wp_enqueue_script($this->pooling . '_select_s2', plugin_dir_url(__FILE__) . 'js/select2/select2.min.js', array('jquery'), $this->version, false);
@@ -160,7 +160,7 @@ class PLG_Public
         $country        = get_user_meta($user->ID, 'country', true);
         $user_ids       = $wpdb->get_results("SELECT user_id FROM {$wpdb->prefix}usermeta WHERE meta_key='country' AND meta_value='{$country}'", ARRAY_A);
         $user_ids       = array_column($user_ids, 'user_id');
-        $longlats       = \PLGLib\CouchDB::connect()->key($country)->getView('countries', 'countries-view-verified')->rows;
+        $longlats       = \PLGLib\CouchDB::connect()->key($country)->getView('countries', 'verified-not-empty-needs')->rows;
         $users_longlats = [];
         foreach ($longlats as $key => $azi) {
             if (\PLGLib\Geo::distanceGeoPoints($center['lat'], $center['lng'], $azi->value->lat, $azi->value->lng) <= POOLING_RADIUS) {
@@ -170,11 +170,11 @@ class PLG_Public
             }
         }
         wp_localize_script($this->pooling . '_send_rq', 'pooling_map_global', array(
-            'ajax_url'              => admin_url('admin-ajax.php'),
-            'nonce'                 => $main_map_nonce,
-            'users_longlats'               => json_encode($users_longlats),
-            'center'            => json_encode($center),
-            'pooling_radius'            => POOLING_RADIUS,
+            'ajax_url'       => admin_url('admin-ajax.php'),
+            'nonce'          => $main_map_nonce,
+            'users_longlats' => json_encode($users_longlats),
+            'center'         => json_encode($center),
+            'pooling_radius' => POOLING_RADIUS,
         ));
         wp_enqueue_script($this->pooling . '_map_script');
         include 'partials/map.php';
@@ -281,7 +281,7 @@ class PLG_Public
                 include_once 'partials/registration.php';
                 return ob_get_clean();
             } else {
-                $output = __('User registration is not enabled','pooling');
+                $output = __('User registration is not enabled', 'pooling');
             }
             return $output;
         }
@@ -354,7 +354,7 @@ class PLG_Public
                     $usr->update_user_fields_registration($new_user_id);
                     do_action('pooling_after_update_meta', $new_user_id);
                     // send the newly created user to the home page after logging them in
-                    switch (get_option('pooling_verification_method',null) ?: POOLING_VERIFICATION_METHOD) {
+                    switch (get_option('pooling_verification_method', null) ?: POOLING_VERIFICATION_METHOD) {
                         case 'email':
                             wp_redirect('/login');
                             break;

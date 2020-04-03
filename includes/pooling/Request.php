@@ -112,7 +112,7 @@ class Request
 
     /**
      * Check if user can withdraw the aid request
-     * @param  PHPOnCouch\CouchDocument $doc              
+     * @param  PHPOnCouch\CouchDocument $doc
      * @param  int $supplied_user_id WP user id
      * @return boolean                   true if can or throw
      */
@@ -121,7 +121,7 @@ class Request
         if ($doc->user_id !== $supplied_user_id) {
             throw new \Exception(__('You are not authorized to withdraw this request!', 'pooling'), 403);
         } elseif (time() - $doc->created_timestamp > POOLING_ACCEPT_OFFER_WINDOW) {
-            throw new \Exception( sprintf(__('You can withdraw the request within %s hour.', 'pooling'), Helpers::secs_to_hours(POOLING_SEND_OFFER_WINDOW)), 403);
+            throw new \Exception(sprintf(__('You can withdraw the request within %s hour.', 'pooling'), Helpers::secs_to_hours(POOLING_SEND_OFFER_WINDOW)), 403);
         } elseif ($doc->target_accepted) {
             throw new \Exception(__('You can\'t withdraw the request once it\'s accepted.', 'pooling'), 403);
         } else {
@@ -131,9 +131,9 @@ class Request
 
     /**
      * Withdraw the aid request
-     * @param  string $request_id       
+     * @param  string $request_id
      * @param  int $supplied_user_id WP user id
-     * @return PHPOnCouch\CouchDocument                   
+     * @return PHPOnCouch\CouchDocument
      */
     public function withdraw_request($request_id, $supplied_user_id)
     {
@@ -149,7 +149,7 @@ class Request
 
     /**
      * Check if user can accept the aid offer(request)
-     * @param  PHPOnCouch\CouchDocument $doc              
+     * @param  PHPOnCouch\CouchDocument $doc
      * @param  int $supplied_user_id WP user d
      * @return boolean                   True if can or throw
      */
@@ -166,9 +166,9 @@ class Request
 
     /**
      * Mark request as accepted
-     * @param  string $request_id       
+     * @param  string $request_id
      * @param  int $supplied_user_id WP user id
-     * @return PHPOnCouch\CouchDocument                   
+     * @return PHPOnCouch\CouchDocument
      */
     public function accept_request($request_id, $supplied_user_id)
     {
@@ -176,6 +176,17 @@ class Request
         if ($this->can_accept_request($doc, $supplied_user_id)) {
             $doc->target_accepted  = true;
             $doc->accept_timestamp = time();
+            $usr                   = new User;
+            $user_doc              = $usr->get_user($doc->target_user_id);
+            // delete aid recipient needs from couchdb
+            $user_doc->needs       = array_diff($user_doc->needs, $doc->needs_cover);
+            $provider_user         = $usr->get_user($doc->user_id);
+            // delete aid provider offers from couchdb
+            $provider_user->offers = array_diff($provider_user->offers, $doc->needs_cover);
+            // delete aid recipient needs from wp user meta
+            update_user_meta($doc->target_user_id, 'needs', $user_doc->needs);
+            // delete aid provider offers from wp user meta
+            update_user_meta($doc->user_id, 'offers', $provider_user->offers);
             do_action('pooling_accept_request', $doc);
             $this->accept_notification($doc);
             return $doc;
@@ -197,13 +208,13 @@ class Request
         $needs = Helpers::needs_to_label_array($req->needs_cover);
         // notify the aid provider for acceptance of the beneficiary user.
         $provider_data = get_userdata($req->user_id);
-        $user_data = get_userdata($req->target_user_id);
-        $mobile    = get_user_meta($req->target_user_id, 'mobile', true);
-        $address   = get_user_meta($req->target_user_id, 'address', true);
-        $city      = get_user_meta($req->target_user_id, 'city', true);
-        $zip       = get_user_meta($req->target_user_id, 'postalcode', true);
-        $firstname = get_user_meta($req->target_user_id, 'first_name', true);
-        $lastname  = get_user_meta($req->target_user_id, 'last_name', true);
+        $user_data     = get_userdata($req->target_user_id);
+        $mobile        = get_user_meta($req->target_user_id, 'mobile', true);
+        $address       = get_user_meta($req->target_user_id, 'address', true);
+        $city          = get_user_meta($req->target_user_id, 'city', true);
+        $zip           = get_user_meta($req->target_user_id, 'postalcode', true);
+        $firstname     = get_user_meta($req->target_user_id, 'first_name', true);
+        $lastname      = get_user_meta($req->target_user_id, 'last_name', true);
 
         $subject = sprintf(__('User %s has accepted your help!', 'pooling'), $user_data->user_login);
         $html    = $template->render([
@@ -223,7 +234,7 @@ class Request
             ],
             'logo'     => 'http://covid19help.eu/wp-content/uploads/2020/03/logo128.png',
         ]);
-        $this->email($provider_data->user_email, $subject, $html, ['notifications@indie.systems']);
+        $this->email($provider_data->user_email, $subject, $html);
 
         $mobile    = get_user_meta($req->user_id, 'mobile', true);
         $address   = get_user_meta($req->user_id, 'address', true);
@@ -250,7 +261,7 @@ class Request
             ],
             'logo'     => 'http://covid19help.eu/wp-content/uploads/2020/03/logo128.png',
         ]);
-        $this->email($user_data->user_email, $subject, $html, ['notifications@indie.systems']);
+        $this->email($user_data->user_email, $subject, $html);
         // notify the beneficiary that the help is coming and their phone was sent.
     }
 
@@ -267,10 +278,10 @@ class Request
         $template = $twig->load('offer_aid.html');
 
         $provider_data = get_userdata($req->user_id);
-        $user_data = get_userdata($req->target_user_id);
+        $user_data     = get_userdata($req->target_user_id);
 
-        $needs     = Helpers::needs_to_label_array($req->needs_cover);
-        $subject   = sprintf(__('User %s is offering help!', 'pooling'), $provider_data->user_login);
+        $needs   = Helpers::needs_to_label_array($req->needs_cover);
+        $subject = sprintf(__('User %s is offering help!', 'pooling'), $provider_data->user_login);
 
         $html = $template->render([
             'header'   => $subject,
@@ -281,8 +292,8 @@ class Request
         ]);
         $this->email($user_data->user_email, $subject, $html);
 
-        $subject   = sprintf(__('You offered help to User %s!', 'pooling'), $user_data->user_login);
-        $html      = $template->render([
+        $subject = sprintf(__('You offered help to User %s!', 'pooling'), $user_data->user_login);
+        $html    = $template->render([
             'header'   => $subject,
             'message'  => sprintf(__('Please see your requests page to review it. The user will not know your personal information until accepts the offer. It\'s mandatory to follow the rules of your national healthcare system and our platform rules. Note: in case you want to wthdraw from your offer, you can do so within %s hour(s)', 'pooling'), Helpers::secs_to_hours(POOLING_ACCEPT_OFFER_WINDOW)),
             'username' => __('Username', 'pooling') . ': ' . $user_data->user_login,
@@ -305,10 +316,10 @@ class Request
         $template = $twig->load('offer_aid.html');
 
         $provider_data = get_userdata($req->user_id);
-        $user_data = get_userdata($req->target_user_id);
+        $user_data     = get_userdata($req->target_user_id);
 
-        $needs     = Helpers::needs_to_label_array($req->needs_cover);
-        $subject   = sprintf(__('You withdrew the aid request for %s!', 'pooling'), $user_data->user_login);
+        $needs   = Helpers::needs_to_label_array($req->needs_cover);
+        $subject = sprintf(__('You withdrew the aid request for %s!', 'pooling'), $user_data->user_login);
 
         // render and send e-mail to the aid provder
         $html = $template->render([
@@ -321,8 +332,8 @@ class Request
         $this->email($provider_data->user_email, $subject, $html);
 
         // render and send e-mail to the aid consumer
-        $subject   = sprintf(__('User %s withdrew the offer!', 'pooling'), $provider_data->user_login);
-        $html      = $template->render([
+        $subject = sprintf(__('User %s withdrew the offer!', 'pooling'), $provider_data->user_login);
+        $html    = $template->render([
             'header'   => $subject,
             'message'  => sprintf(__('Please see your requests page to review it. Users have the right to withdraw an offer within %s hour(s)', 'pooling'), Helpers::secs_to_hours(POOLING_ACCEPT_OFFER_WINDOW)),
             'username' => __('Username', 'pooling') . ': ' . $provider_data->user_login,
