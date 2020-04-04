@@ -28,9 +28,9 @@
       // The marker, positioned at location
       var pinColor = "FFE641";
       var pingImage = {
-          url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-          size: new google.maps.Size(175, 175),
-          origin: new google.maps.Point(0, 0),
+          url: "/wp-content/plugins/pooling/public/img/marker.svg",
+          scaledSize: new google.maps.Size(32, 32),
+          size: new google.maps.Size(480, 480),
           anchor: new google.maps.Point(0, 32)
       };
       var marker = new google.maps.Marker({position: uluru, map: map, icon: pingImage, zIndex: 999});

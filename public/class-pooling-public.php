@@ -163,7 +163,10 @@ class PLG_Public
         $longlats       = \PLGLib\CouchDB::connect()->key($country)->getView('countries', 'verified-not-empty-needs')->rows;
         $users_longlats = [];
         foreach ($longlats as $key => $azi) {
-            if (\PLGLib\Geo::distanceGeoPoints($center['lat'], $center['lng'], $azi->value->lat, $azi->value->lng) <= POOLING_RADIUS) {
+            if (
+                $azi->value->user_id !== $user->ID && 
+                \PLGLib\Geo::distanceGeoPoints($center['lat'], $center['lng'], $azi->value->lat, $azi->value->lng) <= POOLING_RADIUS
+            ) {
                 $users_longlats[] = $azi->value;
             } else {
                 unset($longlats[$key]);
